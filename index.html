@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudySense — Assignment 3</title>
+<style>
+:root{--ink:#1A1D1E;--mut:#5F6869;--bg:#FFFFFF;--card:#F3F5F5;--line:#DDE2E2;--teal:#0F7268;--tealbg:#E1F5EE;--bad:#B3261E;--badbg:#FBEAE9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#ECECEC;--mut:#9AA3A3;--bg:#15181A;--card:#1E2224;--line:#2C3133;--teal:#3FCBAA;--tealbg:#0F2A24;--bad:#FF8A80;--badbg:#2E1A18}}
+:root[data-theme="dark"]{--ink:#ECECEC;--mut:#9AA3A3;--bg:#15181A;--card:#1E2224;--line:#2C3133;--teal:#3FCBAA;--tealbg:#0F2A24;--bad:#FF8A80;--badbg:#2E1A18}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;line-height:1.5}
+.wrap{max-width:640px;margin:0 auto;padding:0 20px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;padding:28px 0 20px}
+.brand{font-size:18px;font-weight:700;color:var(--teal);margin:0}
+.chip{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mut)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin:0 0 4px}
+.sub{font-size:13px;color:var(--mut);margin:0 0 16px}
+label{display:block;font-size:13px;font-weight:600;margin-bottom:12px}
+input,select{display:block;width:100%;margin-top:5px;padding:10px 12px;font:inherit;font-size:14px;border:1.5px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--teal);outline-offset:1px}
+button{font:inherit;cursor:pointer;border:none;border-radius:9px;font-size:14px;font-weight:600;padding:10px 16px}
+button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.pri{background:var(--teal);color:#fff}
+.pri:disabled{opacity:.4;cursor:not-allowed}
+.sec{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.full{width:100%}
+.tabs{display:flex;gap:6px;margin-bottom:16px}
+.tab{background:transparent;color:var(--mut);border:1px solid var(--line);flex:1}
+.tab.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.errs{list-style:none;margin:0 0 12px;padding:0;font-size:13px;color:var(--bad)}
+.errs li{margin-bottom:3px}
+.msg{font-size:13px;min-height:18px;margin:10px 0 0;color:var(--teal)}
+.msg.bad{color:var(--bad)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.item{padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:none;padding-top:0}
+.name{font-weight:600;font-size:15px}
+.meta{font-size:12px;color:var(--mut)}
+.track{height:6px;background:var(--line);border-radius:4px;margin-top:6px;overflow:hidden}
+.fill{height:100%;background:var(--teal);border-radius:4px;transition:width .4s}
+.tag{font-size:11px;font-weight:700;color:var(--teal);background:var(--tealbg);padding:2px 8px;border-radius:20px}
+.qtext{font-size:18px;font-weight:600;margin:14px 0 18px}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--line);color:var(--ink);font-weight:500;padding:12px 14px;margin-bottom:9px}
+.opt.ok{border-color:var(--teal);background:var(--tealbg);color:var(--teal)}
+.opt.no{border-color:var(--bad);background:var(--badbg);color:var(--bad)}
+.opt:disabled{cursor:default}
+.score{font-size:44px;font-weight:700;color:var(--teal);margin:6px 0}
+.hide{display:none}
+</style>
+<style>
+:root{--bg:#F2F6F5;--ink:#10201E;--mut:#4E605D;--line:rgba(16,32,30,.12);--glass:rgba(255,255,255,.72);--teal:#0F7268;--a2:#6556E8;--tealbg:rgba(15,114,104,.12);--onp:#fff;--l:40%;--bad:#B3261E;--badbg:rgba(179,38,30,.1);--glow:rgba(15,114,104,.45)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1211;--ink:#EAF4F2;--mut:#93A8A4;--line:rgba(234,244,242,.12);--glass:rgba(20,32,31,.62);--teal:#3FCBAA;--a2:#A99BFF;--tealbg:rgba(63,203,170,.14);--onp:#06201B;--l:62%;--bad:#FF8A80;--badbg:rgba(255,138,128,.12);--glow:rgba(63,203,170,.5)}:root:not([data-theme="light"]) .bg i{opacity:.26!important}}
+:root[data-theme="dark"]{--bg:#0A1211;--ink:#EAF4F2;--mut:#93A8A4;--line:rgba(234,244,242,.12);--glass:rgba(20,32,31,.62);--teal:#3FCBAA;--a2:#A99BFF;--tealbg:rgba(63,203,170,.14);--onp:#06201B;--l:62%;--bad:#FF8A80;--badbg:rgba(255,138,128,.12);--glow:rgba(63,203,170,.5)}
+body{overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bg i{position:absolute;width:46vmax;height:46vmax;border-radius:50%;filter:blur(80px);opacity:.5;animation:drift 22s ease-in-out infinite alternate}
+.bg i:nth-child(1){background:#19B79F;top:-14vmax;left:-12vmax}
+.bg i:nth-child(2){background:#7C6CFF;right:-16vmax;top:18vh;animation-duration:28s}
+.bg i:nth-child(3){background:#FFB84D;bottom:-20vmax;left:22vw;opacity:.32;animation-duration:34s}
+@keyframes drift{to{transform:translate(8vmax,6vmax) scale(1.15)}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes pop{50%{transform:scale(1.03)}}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+@keyframes sheen{to{background-position:200% 0}}
+@keyframes bob{50%{transform:translateY(-3px) rotate(-6deg)}}
+@keyframes grow{from{width:0}}
+.brand{display:flex;align-items:center;color:var(--ink);font-weight:800;letter-spacing:-.02em;font-size:19px}
+.logo{display:inline-grid;place-items:center;width:32px;height:32px;margin-right:10px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--a2));color:var(--onp);font-size:17px;animation:bob 5s ease-in-out infinite}
+.chip{padding:6px 6px 6px 14px;border:1px solid var(--line);border-radius:30px;background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.card{position:relative;background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 18px 50px -24px var(--glow);animation:rise .55s cubic-bezier(.2,.8,.2,1) both}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(240px circle at var(--mx,50%) var(--my,-20%),var(--tealbg),transparent 70%)}
+.card.shake{animation:shake .45s}
+.hero{font-size:clamp(34px,9vw,48px);line-height:1.02;font-weight:800;letter-spacing:-.035em;margin:2px 0 8px}
+.hero span{background:linear-gradient(90deg,var(--teal),var(--a2),var(--teal));background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sheen 6s linear infinite}
+.greet{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:0 0 14px;animation:rise .5s both}
+h2{font-weight:800;letter-spacing:-.02em}
+button{transition:transform .18s,box-shadow .18s,background .2s,border-color .2s}
+.pri{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--teal),var(--a2));color:var(--onp);box-shadow:0 8px 20px -10px var(--glow)}
+.pri::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-120%)}
+.pri:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 12px 26px -10px var(--glow)}
+.pri:not(:disabled):hover::after{transform:translateX(120%);transition:transform .6s}
+.pri:not(:disabled):active,.opt:not(:disabled):active,.sec:active{transform:scale(.97)}
+.sec:hover{border-color:var(--teal)}
+.tab{border-radius:12px;padding:11px 10px}
+.tab.on{background:linear-gradient(135deg,var(--teal),var(--a2));color:var(--onp);border-color:transparent;box-shadow:0 8px 20px -10px var(--glow)}
+input,select{border-radius:12px;background:var(--glass);transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px var(--tealbg)}
+.errs li{animation:rise .3s both}
+.msg{font-weight:600}
+.track{height:8px;border-radius:6px}
+.fill{border-radius:6px;background:linear-gradient(90deg,var(--teal),var(--a2));animation:grow 1s cubic-bezier(.2,.8,.2,1) both;box-shadow:0 0 14px -2px var(--glow)}
+.item.topic{border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px;background:hsl(var(--h) 80% 50%/.07);animation:rise .55s cubic-bezier(.2,.8,.2,1) both;transition:transform .2s,border-color .2s,box-shadow .2s}
+.item.topic:hover{transform:translateY(-3px);border-color:hsl(var(--h) 70% 50%/.55);box-shadow:0 14px 30px -18px hsl(var(--h) 80% 45%/.6)}
+.item.topic .fill{background:hsl(var(--h) 72% var(--l))}
+#vTopics,#vQuiz,#vDone{animation:rise .45s cubic-bezier(.2,.8,.2,1) both}
+#vDone{text-align:center}
+.qtext{font-size:20px;font-weight:700;letter-spacing:-.01em}
+.opt{border-radius:14px;transition:transform .18s,border-color .18s,background .18s}
+.opt:not(:disabled):hover{transform:translateX(5px);border-color:var(--teal)}
+.opt.ok{animation:pop .45s}
+.opt.no{animation:shake .45s}
+.score{position:relative;width:148px;height:148px;margin:10px auto 14px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:800;color:var(--ink);background:conic-gradient(var(--teal) calc(var(--p,0)*1%),var(--line) 0)}
+.score::before{content:"";position:absolute;inset:11px;border-radius:50%;background:var(--bg)}
+.score span{position:relative}
+.conf{position:fixed;top:-16px;width:9px;height:14px;border-radius:3px;z-index:60;pointer-events:none;animation:fall 2s cubic-bezier(.3,.1,.6,1) forwards}
+@property --p{syntax:"<number>";inherits:false;initial-value:0}
+:root{--warn:#A15C00;--warnbg:rgba(255,170,40,.16)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--warn:#F2C46B;--warnbg:rgba(242,196,107,.14)}}
+:root[data-theme="dark"]{--warn:#F2C46B;--warnbg:rgba(242,196,107,.14)}
+@keyframes blink{50%{opacity:.25;transform:scale(.8)}}
+.live{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;margin:-6px 0 14px;background:var(--glass)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:blink 1.4s ease-in-out infinite}
+.dot.off{background:var(--mut);animation:none}
+.focus{display:flex;align-items:center;gap:16px;margin:8px 0}
+.ring{position:relative;flex:none;width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:26px;background:conic-gradient(var(--fc,var(--teal)) calc(var(--p)*1%),var(--line) 0);transition:--p .8s ease}
+.ring::before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--bg)}
+.ring span{position:relative}
+.nudge{border-radius:14px;padding:12px 14px;font-size:13px;font-weight:600;margin:12px 0;background:var(--tealbg);color:var(--teal);transition:background .4s,color .4s}
+.nudge.warn{background:var(--warnbg);color:var(--warn)}
+.nudge.bad{background:var(--badbg);color:var(--bad)}
+.gauges{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+@media (max-width:520px){.gauges{grid-template-columns:1fr}}
+.g{border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--glass);color:var(--teal)}
+.g.warn{color:var(--warn)}.g.bad{color:var(--bad)}
+.g b{display:block;font-size:28px;font-weight:800;letter-spacing:-.02em}
+.g small{font-size:11px;color:var(--mut)}
+.g svg{display:block;width:100%;height:34px;margin-top:6px}
+.spark{fill:none;stroke:currentColor;stroke-width:1.8;vector-effect:non-scaling-stroke;stroke-linejoin:round}
+.area{fill:currentColor;opacity:.14;stroke:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.chips button{padding:8px 12px;font-size:13px}
+.chips button.on{border-color:var(--teal);background:var(--tealbg)}
+.log{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;line-height:1.7;background:#0C1514;color:#8FE3CF;border-radius:12px;padding:10px 12px;height:132px;overflow:hidden;margin-top:6px}
+.log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:rise .3s both}
+.tab{font-size:13px;padding:11px 4px}
+.coach{border-radius:16px;padding:14px 16px;margin:0 0 14px;background:var(--tealbg);border:1px solid var(--line);transition:background .4s}
+.coach.warn{background:var(--warnbg)}.coach.bad{background:var(--badbg)}
+.coach .k{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+.coach .t{font-size:17px;font-weight:800;margin:2px 0}
+.coach .x{font-size:13px;color:var(--mut);margin:0 0 10px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+@media (max-width:520px){.tiles{grid-template-columns:repeat(2,1fr)}}
+.tile{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--glass)}
+.tile b{display:block;font-size:20px;font-weight:800;letter-spacing:-.02em;margin:2px 0}
+.tile small{font-size:11px;color:var(--mut)}
+.chart{display:block;width:100%;height:auto;margin:6px 0 10px}
+.chart text{fill:var(--mut);font-size:9px;font-family:inherit}
+.chart .bar{transform-box:fill-box;transform-origin:bottom;animation:barUp .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes barUp{from{transform:scaleY(0)}}
+.find{font-size:13px;margin:6px 0}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--warnbg);color:var(--warn)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="wrap">
+
+<header class="top">
+<p class="brand"><span class="logo">S</span>StudySense</p>
+<div class="chip hide" id="chip"><span id="chipName"></span><button class="sec" id="logoutBtn">Log out</button></div>
+</header>
+
+<!-- ===== Login / Register ===== -->
+<section class="card" id="auth">
+<h1 class="hero">Study smarter.<br><span>Breathe better.</span></h1>
+<p class="sub">Quizzes that find your weak topics. Log in or create an account.</p>
+<div class="tabs"><button class="tab on" id="tabLogin">Log in</button><button class="tab" id="tabReg">Create account</button></div>
+
+<div id="loginBox">
+<label>Email<input id="lEmail" type="email" autocomplete="email"></label>
+<label>Password<input id="lPw" type="password" autocomplete="current-password"></label>
+<ul class="errs" id="lErr" role="alert"></ul>
+<button class="pri full" id="lBtn">Log in</button>
+</div>
+
+<div id="regBox" class="hide">
+<label>Name<input id="rName" type="text" autocomplete="name"></label>
+<label>Email<input id="rEmail" type="email" autocomplete="email"></label>
+<label>Password<input id="rPw" type="password" autocomplete="new-password"></label>
+<label>Confirm password<input id="rPw2" type="password" autocomplete="new-password"></label>
+<ul class="errs" id="rErr" role="alert"></ul>
+<button class="pri full" id="rBtn">Create account</button>
+</div>
+</section>
+
+<!-- ===== App ===== -->
+<main id="app" class="hide">
+<h1 class="greet" id="hi"></h1>
+<button class="sec live" id="live"></button>
+<nav class="tabs"><button class="tab on" data-tab="quiz">Quiz</button><button class="tab" data-tab="history">History</button><button class="tab" data-tab="desk">Desk</button><button class="tab" data-tab="insights">Insights</button><button class="tab" data-tab="profile">Profile</button></nav>
+
+<section class="card" id="tab-quiz">
+<div id="vTopics"><h2>Pick a topic</h2><p class="sub" id="weakLine">3 questions each.</p><div class="coach" id="coach"></div><div id="topicList"></div></div>
+<div id="vQuiz" class="hide">
+<div class="row"><span class="meta" id="qLabel"></span><button class="sec" id="qExit">Exit</button></div>
+<div class="track"><div class="fill" id="qBar" style="width:0%"></div></div>
+<p class="qtext" id="qText"></p>
+<div id="qOpts"></div>
+<button class="pri" id="qNext" disabled>Next</button>
+</div>
+<div id="vDone" class="hide"><h2>Quiz complete</h2><div class="score" id="dScore"></div><p class="sub">Saved to your history.</p><button class="pri" id="dBack">Back to topics</button></div>
+</section>
+
+<section class="card hide" id="tab-history">
+<h2>Your history</h2>
+<p class="sub">Everything you saved stays here after reload.</p>
+<label>Filter by topic<select id="hFilter"></select></label>
+<div id="hList"></div>
+<p class="msg" id="hMsg"></p>
+</section>
+
+<section class="card hide" id="tab-desk">
+<div class="row"><div><h2>Desk sensor</h2><p class="sub">Simulated ESP32 with light, CO2 and noise sensors. Real hardware comes next.</p></div><button class="sec" id="plugBtn">Unplug ESP32</button></div>
+<div class="focus"><div class="ring" id="ring"><span id="ringN">0</span></div><div><div class="name" id="focusLbl"></div><div class="meta">Focus score from air, light and noise</div></div></div>
+<div class="nudge" id="nudge"></div>
+<div class="gauges" id="gauges"></div>
+<p class="meta">Try a scenario</p>
+<div class="chips" id="scen"></div>
+<p class="meta">Live MQTT feed</p>
+<div class="log" id="log"></div>
+<p class="msg" id="deskInsight"></p>
+</section>
+
+<section class="card hide" id="tab-insights">
+<h2>Insights</h2>
+<p class="sub">Calculated from your saved quiz attempts and the sensor readings taken with them.</p>
+<div id="simBadge"></div>
+<div class="tiles" id="tiles"></div>
+<h2>Average quiz score by study conditions</h2>
+<svg class="chart" id="chart" viewBox="0 0 320 190" role="img" aria-label="Bar chart of average quiz score by focus conditions"></svg>
+<div id="findings"></div>
+<div class="chips"><button class="sec" id="addSim">Add simulated data</button><button class="sec" id="rmSim">Remove simulated data</button></div>
+<p class="msg" id="insMsg"></p>
+</section>
+
+<section class="card hide" id="tab-profile">
+<h2>Profile</h2>
+<p class="sub" id="pInfo"></p>
+<label>Display name<input id="pName" type="text"></label>
+<ul class="errs" id="pErr" role="alert"></ul>
+<button class="pri" id="pSave">Save name</button>
+<p class="msg" id="pMsg"></p>
+</section>
+</main>
+
+</div>
+
+<script>
+(function () {
+"use strict";
+
+var TOPICS = [
+{ id: "cs", name: "Computer Systems", q: [
+ { q: "What does CPU stand for?", o: ["Central Processing Unit", "Computer Processing Utility", "Central Program Unit", "Core Processing Unit"], c: 0 },
+ { q: "RAM is which type of memory?", o: ["Non-volatile", "Volatile", "Permanent", "Read-only"], c: 1 },
+ { q: "Which part executes program instructions?", o: ["Monitor", "CPU", "Keyboard", "Router"], c: 1 }] },
+{ id: "net", name: "Networks", q: [
+ { q: "Which OSI layer handles routing between networks?", o: ["Physical", "Network", "Session", "Application"], c: 1 },
+ { q: "What does LAN stand for?", o: ["Local Area Network", "Large Access Node", "Logical Area Network", "Linked Area Network"], c: 0 },
+ { q: "Which transport protocol is connectionless?", o: ["TCP", "UDP", "FTP", "HTTP"], c: 1 }] },
+{ id: "db", name: "Databases", q: [
+ { q: "What does DBMS stand for?", o: ["Database Management System", "Data Backup Management Service", "Digital Base Management System", "Database Model System"], c: 0 },
+ { q: "Which key uniquely identifies a row?", o: ["Foreign key", "Primary key", "Candidate index", "Composite field"], c: 1 },
+ { q: "SQL stands for?", o: ["Structured Query Language", "Sequential Query Logic", "Simple Query Language", "Structured Question Language"], c: 0 }] },
+{ id: "sec", name: "Cybersecurity", q: [
+ { q: "What is phishing?", o: ["A firewall type", "A trick to make people reveal data", "An encryption method", "A network protocol"], c: 1 },
+ { q: "What does VPN stand for?", o: ["Virtual Private Network", "Verified Public Node", "Virtual Public Network", "Verified Private Node"], c: 0 },
+ { q: "Which is a strong password practice?", o: ["Reuse one password everywhere", "Use long, unique passphrases", "Write it on paper", "Use your birthdate"], c: 1 }] }
+];
+
+/* ---------- Data storage: JSON tables saved in the browser ---------- */
+var DB_KEY = "studysense_a3_db", SESSION_KEY = "studysense_a3_session", memDB = null;
+function emptyDB() { return { users: [], attempts: [], answers: [], nextId: 1 }; }
+function loadDB() {
+  try { var raw = localStorage.getItem(DB_KEY); return raw ? JSON.parse(raw) : emptyDB(); }
+  catch (e) { return memDB || emptyDB(); }
+}
+function saveDB(db) {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch (e) { memDB = db; }
+}
+
+/* ---------- Helpers ---------- */
+function $(id) { return document.getElementById(id); }
+function show(id, on) { $(id).classList.toggle("hide", !on); }
+function showErrors(id, list) {
+  var ul = $(id); ul.innerHTML = "";
+  if (list.length) { var c = ul.closest(".card"); c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake"); }
+  list.forEach(function (t) { var li = document.createElement("li"); li.textContent = t; ul.appendChild(li); });
+}
+function topicById(id) { return TOPICS.filter(function (t) { return t.id === id; })[0]; }
+function randomSalt() {
+  var a = new Uint8Array(8); crypto.getRandomValues(a);
+  return Array.from(a).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+}
+async function sha(text) {
+  var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+}
+
+/* ---------- Validation ---------- */
+function validateRegister(name, email, pw, pw2) {
+  var errs = [];
+  if (name.length < 2 || name.length > 40) errs.push("Enter your name (2 to 40 characters).");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.push("Enter a valid email address.");
+  if (pw.length < 8 || !/\d/.test(pw) || !/[A-Za-z]/.test(pw)) errs.push("Password needs 8+ characters, letters and a digit.");
+  if (pw !== pw2) errs.push("Passwords do not match.");
+  return errs;
+}
+
+/* ---------- Auth ---------- */
+var user = null;
+
+async function onRegister() {
+  var name = $("rName").value.trim(), email = $("rEmail").value.trim().toLowerCase();
+  var pw = $("rPw").value, pw2 = $("rPw2").value;
+  var errs = validateRegister(name, email, pw, pw2);
+  var db = loadDB();
+  if (!errs.length && db.users.some(function (u) { return u.email === email; })) errs.push("This email is already registered. Try logging in.");
+  if (errs.length) { showErrors("rErr", errs); return; }
+  try {
+    var salt = randomSalt();
+    var u = { id: db.nextId++, name: name, email: email, salt: salt, hash: await sha(salt + pw), created: Date.now() };
+    db.users.push(u); saveDB(db);
+    showErrors("rErr", []); startSession(u);
+  } catch (e) { showErrors("rErr", ["Could not create the account in this browser."]); }
+}
+
+async function onLogin() {
+  var email = $("lEmail").value.trim().toLowerCase(), pw = $("lPw").value;
+  if (!email || !pw) { showErrors("lErr", ["Enter your email and password."]); return; }
+  var u = loadDB().users.filter(function (x) { return x.email === email; })[0];
+  var ok = false;
+  try { ok = !!u && (await sha(u.salt + pw)) === u.hash; } catch (e) { ok = false; }
+  if (!ok) { showErrors("lErr", ["Incorrect email or password."]); return; }
+  showErrors("lErr", []); startSession(u);
+}
+
+function startSession(u) {
+  user = u;
+  try { localStorage.setItem(SESSION_KEY, String(u.id)); } catch (e) {}
+  ["lEmail", "lPw", "rName", "rEmail", "rPw", "rPw2"].forEach(function (i) { $(i).value = ""; });
+  show("auth", false); show("app", true); show("chip", true);
+  $("chipName").textContent = u.name; $("hi").textContent = "Hey, " + u.name.split(" ")[0] + " 👋";
+  switchTab("quiz"); renderTopics();
+}
+
+function logout() {
+  user = null;
+  try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+  show("app", false); show("chip", false); show("auth", true);
+}
+
+/* ---------- Tabs ---------- */
+function switchTab(name) {
+  document.querySelectorAll("[data-tab]").forEach(function (b) { b.classList.toggle("on", b.dataset.tab === name); });
+  ["quiz", "history", "desk", "insights", "profile"].forEach(function (t) { show("tab-" + t, t === name); });
+  if (name === "quiz") { show("vTopics", true); show("vQuiz", false); show("vDone", false); renderTopics(); }
+  if (name === "history") renderHistory();
+  if (name === "desk") renderDesk();
+  if (name === "insights") renderInsights();
+  if (name === "profile") renderProfile();
+}
+
+/* ---------- Quiz ---------- */
+var ICON = { cs: "💻", net: "🌐", db: "🗄️", sec: "🔐" }, HUE = { cs: 172, net: 215, db: 265, sec: 340 };
+var st = { topicId: null, i: 0, sel: null, score: 0, answers: [] };
+
+function mastery(topicId) {
+  var mine = loadDB().attempts.filter(function (a) { return a.userId === user.id && a.topicId === topicId; });
+  if (!mine.length) return null;
+  var sum = 0; mine.forEach(function (a) { sum += a.score / a.total; });
+  return Math.round(sum / mine.length * 100);
+}
+
+function renderTopics() {
+  renderCoach();
+  var rows = TOPICS.map(function (t) { return { t: t, m: mastery(t.id) }; });
+  var attempted = rows.filter(function (r) { return r.m !== null; }).sort(function (a, b) { return a.m - b.m; });
+  $("weakLine").textContent = attempted.length ? "Review first: " + attempted[0].t.name + " (" + attempted[0].m + "%)" : "3 questions each. Take a quiz to start your gap map.";
+  var list = $("topicList"); list.innerHTML = "";
+  rows.forEach(function (r, i) {
+    var d = document.createElement("div"); d.className = "item";
+    d.className = "item topic"; d.style.setProperty("--h", HUE[r.t.id]); d.style.animationDelay = (i * 70) + "ms";
+    d.innerHTML = '<div class="row"><div style="flex:1"><div class="name">' + ICON[r.t.id] + " " + r.t.name + '</div><div class="meta">' +
+      (r.m === null ? "Not attempted" : "Mastery " + r.m + "%") + '</div><div class="track"><div class="fill" style="width:' + (r.m || 0) + '%"></div></div></div><button class="pri">Start</button></div>';
+    d.querySelector("button").onclick = function () { startQuiz(r.t.id); };
+    list.appendChild(d);
+  });
+}
+
+function startQuiz(topicId) {
+  st = { topicId: topicId, i: 0, sel: null, score: 0, answers: [] };
+  show("vTopics", false); show("vDone", false); show("vQuiz", true); renderQuestion();
+}
+
+function renderQuestion() {
+  var t = topicById(st.topicId), x = t.q[st.i]; st.sel = null;
+  $("qLabel").textContent = t.name + " · Question " + (st.i + 1) + " of " + t.q.length;
+  $("qBar").style.width = Math.round(st.i / t.q.length * 100) + "%";
+  $("qText").textContent = x.q;
+  var box = $("qOpts"); box.innerHTML = "";
+  x.o.forEach(function (text, i) {
+    var b = document.createElement("button"); b.className = "opt"; b.textContent = text;
+    b.onclick = function () { pick(i, x); }; box.appendChild(b);
+  });
+  $("qNext").disabled = true;
+  $("qNext").textContent = st.i === t.q.length - 1 ? "See results" : "Next";
+}
+
+function pick(i, x) {
+  if (st.sel !== null) return;
+  st.sel = i;
+  var correct = i === x.c; if (correct) st.score++;
+  st.answers.push({ questionIndex: st.i, selected: i, isCorrect: correct });
+  $("qOpts").querySelectorAll(".opt").forEach(function (b, k) {
+    b.disabled = true;
+    if (k === x.c) b.classList.add("ok"); else if (k === i) b.classList.add("no");
+  });
+  $("qNext").disabled = false;
+}
+
+function celebrate(score, total) {
+  var pct = Math.round(score / total * 100), el = $("dScore"), t0 = performance.now();
+  $("vDone").querySelector(".sub").textContent = (pct === 100 ? "Flawless. " : pct >= 67 ? "Nice work. " : "Good start, review this one next. ") + "Saved to your history.";
+  (function tick(now) {
+    var k = Math.min(1, (now - t0) / 900), e = 1 - Math.pow(1 - k, 3);
+    el.style.setProperty("--p", pct * e);
+    el.innerHTML = "<span>" + Math.round(score * e) + " / " + total + "</span>";
+    if (k < 1) requestAnimationFrame(tick);
+  })(t0);
+  if (pct === 100) for (var i = 0; i < 28; i++) {
+    var c = document.createElement("i"); c.className = "conf";
+    c.style.left = Math.random() * 100 + "vw"; c.style.background = ["#19B79F", "#6556E8", "#FFB84D", "#FF6B8B"][i % 4];
+    c.style.animationDelay = Math.random() * 0.5 + "s"; document.body.appendChild(c);
+    setTimeout((function (n) { return function () { n.remove(); }; })(c), 2800);
+  }
+}
+function finishQuiz() {
+  var t = topicById(st.topicId), db = loadDB();
+  var id = db.nextId++;
+  db.attempts.push({ id: id, userId: user.id, topicId: t.id, score: st.score, total: t.q.length, time: Date.now(), env: snapshot() });
+  st.answers.forEach(function (a) { db.answers.push({ attemptId: id, questionIndex: a.questionIndex, selected: a.selected, isCorrect: a.isCorrect }); });
+  saveDB(db);
+  celebrate(st.score, t.q.length);
+  show("vQuiz", false); show("vDone", true);
+}
+
+/* ---------- History: read, filter, delete ---------- */
+function renderHistory() {
+  var sel = $("hFilter"), current = sel.value || "all";
+  sel.innerHTML = '<option value="all">All topics</option>';
+  TOPICS.forEach(function (t) { var o = document.createElement("option"); o.value = t.id; o.textContent = t.name; sel.appendChild(o); });
+  sel.value = current;
+  var mine = loadDB().attempts.filter(function (a) { return a.userId === user.id && (current === "all" || a.topicId === current); })
+    .sort(function (a, b) { return b.time - a.time; });
+  var list = $("hList"); list.innerHTML = "";
+  $("hMsg").textContent = ""; $("hMsg").className = "msg";
+  if (!mine.length) { list.innerHTML = '<p class="meta">No attempts yet. Take a quiz and it will appear here.</p>'; return; }
+  mine.forEach(function (a) {
+    var d = document.createElement("div"); d.className = "item";
+    d.innerHTML = '<div class="row"><div><div class="name">' + topicById(a.topicId).name + ' · ' + a.score + '/' + a.total + '</div><div class="meta">' +
+      new Date(a.time).toLocaleString() + (a.env ? ' · CO2 ' + a.env.co2 + ' ppm · focus ' + a.env.focus : '') + (a.sim ? ' \u00b7 simulated' : '') + '</div></div><button class="sec">Delete</button></div>';
+    d.querySelector("button").onclick = function () { deleteAttempt(a.id); };
+    list.appendChild(d);
+  });
+}
+
+function deleteAttempt(id) {
+  var db = loadDB();
+  db.attempts = db.attempts.filter(function (a) { return !(a.id === id && a.userId === user.id); });
+  db.answers = db.answers.filter(function (a) { return a.attemptId !== id; });
+  saveDB(db); renderHistory();
+  $("hMsg").textContent = "Attempt deleted."; 
+}
+
+/* ---------- Profile: update ---------- */
+function renderProfile() {
+  var count = loadDB().attempts.filter(function (a) { return a.userId === user.id; }).length;
+  $("pInfo").textContent = user.email + " · " + count + " saved attempt" + (count === 1 ? "" : "s");
+  $("pName").value = user.name; showErrors("pErr", []); $("pMsg").textContent = "";
+}
+
+function saveName() {
+  var name = $("pName").value.trim();
+  if (name.length < 2 || name.length > 40) { showErrors("pErr", ["Enter your name (2 to 40 characters)."]); $("pMsg").textContent = ""; return; }
+  var db = loadDB(), u = db.users.filter(function (x) { return x.id === user.id; })[0];
+  u.name = name; saveDB(db); user = u;
+  $("chipName").textContent = name; $("hi").textContent = "Hey, " + name.split(" ")[0] + " 👋"; showErrors("pErr", []);
+  $("pMsg").className = "msg"; $("pMsg").textContent = "Name updated.";
+}
+
+/* ---------- Wiring ---------- */
+$("tabLogin").onclick = function () { show("loginBox", true); show("regBox", false); $("tabLogin").classList.add("on"); $("tabReg").classList.remove("on"); };
+$("tabReg").onclick = function () { show("loginBox", false); show("regBox", true); $("tabReg").classList.add("on"); $("tabLogin").classList.remove("on"); };
+$("lBtn").onclick = onLogin; $("rBtn").onclick = onRegister; $("logoutBtn").onclick = logout;
+["lEmail", "lPw"].forEach(function (i) { $(i).addEventListener("keydown", function (e) { if (e.key === "Enter") onLogin(); }); });
+["rName", "rEmail", "rPw", "rPw2"].forEach(function (i) { $(i).addEventListener("keydown", function (e) { if (e.key === "Enter") onRegister(); }); });
+document.querySelectorAll("[data-tab]").forEach(function (b) { b.onclick = function () { switchTab(b.dataset.tab); }; });
+$("qNext").onclick = function () {
+  var t = topicById(st.topicId);
+  if (st.i < t.q.length - 1) { st.i++; renderQuestion(); } else finishQuiz();
+};
+$("qExit").onclick = function () { switchTab("quiz"); };
+$("dBack").onclick = function () { switchTab("quiz"); };
+$("hFilter").onchange = renderHistory;
+$("pSave").onclick = saveName;
+
+document.addEventListener("pointermove", function (e) {
+  var c = e.target.closest && e.target.closest(".card");
+  if (!c) return;
+  var r = c.getBoundingClientRect();
+  c.style.setProperty("--mx", (e.clientX - r.left) + "px"); c.style.setProperty("--my", (e.clientY - r.top) + "px");
+});
+
+/* ---------- Sensor simulation: a pretend ESP32 desk node ---------- */
+var sim = { co2: 780, lux: 430, db: 38, on: true, win: false, crowd: false, noisy: false, dim: false };
+var hist = { co2: [], lux: [], db: [] }, logLines = [], tickN = 0;
+var SENS = [
+  { k: "co2", name: "CO2", unit: "ppm", min: 400, max: 2000, lvl: function (v) { return v > 1000 ? "bad" : v > 800 ? "warn" : ""; } },
+  { k: "lux", name: "Light", unit: "lux", min: 0, max: 900, lvl: function (v) { return (v < 150 || v > 850) ? "bad" : (v < 250 || v > 700) ? "warn" : ""; } },
+  { k: "db", name: "Noise", unit: "dB", min: 25, max: 75, lvl: function (v) { return v > 55 ? "bad" : v > 45 ? "warn" : ""; } }
+];
+var SCEN = [["win", "🪟 Window open"], ["crowd", "👥 Crowded room"], ["noisy", "🔊 Noisy dorm"], ["dim", "🌙 Dim light"]];
+
+function clampN(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function ease(cur, target, rate, dt) { return cur + (target - cur) * (1 - Math.pow(1 - rate, dt)); }
+
+// Move every reading toward the target of the current scenario. dt = seconds simulated.
+function stepSim(dt) {
+  var co2T = sim.win ? 450 : sim.crowd ? 1900 : 1250;
+  var co2R = sim.win ? 0.08 : sim.crowd ? 0.03 : 0.012;
+  sim.co2 = Math.max(400, ease(sim.co2, co2T, co2R, dt) + (Math.random() - 0.5) * 14);
+  sim.lux = Math.max(0, ease(sim.lux, sim.dim ? 110 : 430, 0.1, dt) + (Math.random() - 0.5) * 18);
+  sim.db = Math.max(28, ease(sim.db, sim.noisy ? 64 : 37, 0.15, dt) + (Math.random() - 0.5) * 3);
+}
+
+// 100 = perfect. Penalties for stuffy air, loud noise and bad light.
+function focusScore() {
+  var p = clampN((sim.co2 - 800) / 12, 0, 50) + clampN((sim.db - 45) * 1.6, 0, 30) +
+    (sim.lux < 250 ? clampN((250 - sim.lux) / 8, 0, 20) : sim.lux > 800 ? clampN((sim.lux - 800) / 20, 0, 15) : 0);
+  return Math.round(clampN(100 - p, 0, 100));
+}
+
+// Saved with every quiz attempt so we can compare score and conditions.
+function snapshot() { return sim.on ? { co2: Math.round(sim.co2), lux: Math.round(sim.lux), db: Math.round(sim.db), focus: focusScore() } : null; }
+
+function pushLog(text) {
+  logLines.push(new Date().toLocaleTimeString([], { hour12: false }) + "  " + text);
+  if (logLines.length > 6) logLines.shift();
+}
+function publishMsg() { pushLog("studysense/desk01/env {\"co2\":" + Math.round(sim.co2) + ",\"lux\":" + Math.round(sim.lux) + ",\"db\":" + Math.round(sim.db) + "}"); }
+function sample() {
+  SENS.forEach(function (s) { hist[s.k].push(Math.round(sim[s.k])); if (hist[s.k].length > 40) hist[s.k].shift(); });
+}
+function sparkSvg(arr, s) {
+  if (!arr.length) return "";
+  var pts = arr.map(function (v, i) {
+    var x = 100 - (arr.length - 1 - i) * (100 / 39), y = 29 - clampN((v - s.min) / (s.max - s.min), 0, 1) * 27;
+    return x.toFixed(1) + "," + y.toFixed(1);
+  });
+  return '<polygon class="area" points="' + pts[0].split(",")[0] + ',30 ' + pts.join(" ") + ' 100,30"/><polyline class="spark" points="' + pts.join(" ") + '"/>';
+}
+
+function buildDesk() {
+  $("gauges").innerHTML = SENS.map(function (s) {
+    return '<div class="g" id="g-' + s.k + '"><small>' + s.name + '</small><b>-</b><small>' + s.unit + '</small><svg viewBox="0 0 100 30" preserveAspectRatio="none"></svg></div>';
+  }).join("");
+  SCEN.forEach(function (c) {
+    var b = document.createElement("button"); b.className = "sec"; b.textContent = c[1]; b.dataset.k = c[0];
+    b.onclick = function () {
+      sim[c[0]] = !sim[c[0]];
+      if (c[0] === "win" && sim.win) sim.crowd = false;
+      if (c[0] === "crowd" && sim.crowd) sim.win = false;
+      renderDesk();
+    };
+    $("scen").appendChild(b);
+  });
+  var ff = document.createElement("button"); ff.className = "sec"; ff.textContent = "⏩ Fast-forward 30 min";
+  ff.onclick = function () {
+    if (!sim.on) return;
+    for (var i = 0; i < 30; i++) { stepSim(60); sample(); }
+    pushLog("-- fast-forward 30 minutes --"); publishMsg(); renderDesk(); updateLive();
+  };
+  $("scen").appendChild(ff);
+}
+
+function renderDesk() {
+  var f = focusScore(), co2 = Math.round(sim.co2), db = Math.round(sim.db), lux = Math.round(sim.lux);
+  var tone = f >= 75 ? "teal" : f >= 50 ? "warn" : "bad";
+  $("ring").style.setProperty("--p", sim.on ? f : 0);
+  $("ring").style.setProperty("--fc", "var(--" + tone + ")");
+  $("ringN").textContent = sim.on ? f : "-";
+  $("focusLbl").textContent = !sim.on ? "No signal" : f >= 75 ? "Great focus conditions" : f >= 50 ? "Fair focus conditions" : "Poor focus conditions";
+  SENS.forEach(function (s) {
+    var g = $("g-" + s.k), v = Math.round(sim[s.k]);
+    g.className = "g " + (sim.on ? s.lvl(v) : "");
+    g.querySelector("b").textContent = sim.on ? v : "-";
+    g.querySelector("svg").innerHTML = sparkSvg(hist[s.k], s);
+  });
+  var msg, lv = "";
+  if (!sim.on) { msg = "ESP32 is offline. Plug it in to get live readings."; lv = "warn"; }
+  else if (co2 > 1000) { msg = "CO2 is high (" + co2 + " ppm). Open a window before your next quiz."; lv = "bad"; }
+  else if (db > 55) { msg = "Loud room (" + db + " dB). Try headphones or move to the library."; lv = "bad"; }
+  else if (lux < 150) { msg = "Too dark (" + lux + " lux). Turn on a desk lamp."; lv = "bad"; }
+  else if (lux > 850) { msg = "Too bright (" + lux + " lux). Reduce glare on your screen."; lv = "bad"; }
+  else if (co2 > 800) { msg = "The air is getting stuffy. A short break soon would help."; lv = "warn"; }
+  else msg = "Conditions look great. Good time to study.";
+  $("nudge").className = "nudge " + lv; $("nudge").textContent = msg;
+  $("scen").querySelectorAll("button[data-k]").forEach(function (b) { b.classList.toggle("on", !!sim[b.dataset.k]); });
+  $("plugBtn").textContent = sim.on ? "Unplug ESP32" : "Plug in ESP32";
+  $("log").innerHTML = logLines.map(function (l) { return "<div>" + l + "</div>"; }).join("");
+  // Compare quiz scores in good and poor conditions
+  var tracked = user ? loadDB().attempts.filter(function (a) { return a.userId === user.id && a.env; }) : [];
+  function avg(list) { var s = 0; list.forEach(function (a) { s += a.score / a.total; }); return Math.round(s / list.length * 100); }
+  var hi = tracked.filter(function (a) { return a.env.focus >= 70; }), lo = tracked.filter(function (a) { return a.env.focus < 70; });
+  $("deskInsight").textContent = (hi.length && lo.length) ? "Your average score with focus 70+: " + avg(hi) + "%. Below 70: " + avg(lo) + "%." : "Take quizzes in different conditions to see how focus changes your score.";
+}
+
+function updateLive() {
+  $("live").innerHTML = '<span class="dot' + (sim.on ? "" : " off") + '"></span>' + (sim.on ? "ESP32 online · CO2 " + Math.round(sim.co2) + " ppm · Focus " + focusScore() : "ESP32 offline");
+}
+
+buildDesk();
+for (var w = 0; w < 40; w++) { stepSim(1); sample(); }
+publishMsg(); updateLive();
+$("live").onclick = function () { switchTab("desk"); };
+$("plugBtn").onclick = function () {
+  sim.on = !sim.on;
+  pushLog('studysense/desk01/status "' + (sim.on ? "online" : "offline") + '" (last will)');
+  renderDesk(); updateLive();
+};
+setInterval(function () {
+  if (sim.on) { stepSim(1); sample(); tickN++; if (tickN % 2 === 0) publishMsg(); }
+  updateLive();
+  if (!$("tab-desk").classList.contains("hide")) renderDesk();
+  if (user && !$("tab-quiz").classList.contains("hide") && !$("vTopics").classList.contains("hide")) renderCoach();
+}, 1000);
+
+/* ---------- Smart function: Study Coach (reads quiz results + live sensor data) ---------- */
+var coachTopic = null;
+function topicStats() {
+  var mine = loadDB().attempts.filter(function (a) { return a.userId === user.id; });
+  return TOPICS.map(function (t) {
+    var list = mine.filter(function (a) { return a.topicId === t.id; }), s = 0;
+    list.forEach(function (a) { s += a.score / a.total; });
+    return { t: t, n: list.length, m: list.length ? Math.round(s / list.length * 100) : null };
+  });
+}
+// Rules: no data -> first quiz. Poor conditions -> postpone the weakest topic. Good conditions -> tackle it now.
+function coachPlan() {
+  var all = topicStats(), tried = all.filter(function (x) { return x.m !== null; }).sort(function (a, b) { return a.m - b.m; });
+  var f = focusScore(), poor = sim.on && f < 60, note = sim.on ? "" : " (Sensor offline, so this uses quiz results only.)";
+  if (!tried.length) return { lvl: "", t: "Take your first quiz", x: "The coach needs one result to find your weak topics.", id: TOPICS[0].id, btn: "Start " + TOPICS[0].name };
+  var weak = tried[0].m < 70 ? tried[0] : null, strong = tried[tried.length - 1], fresh = all.filter(function (x) { return x.m === null; })[0];
+  if (poor && weak && weak.t.id === strong.t.id) return { lvl: "bad", t: "Conditions are poor right now", x: "Focus is " + f + " (CO2 " + Math.round(sim.co2) + " ppm, noise " + Math.round(sim.db) + " dB). Save " + weak.t.name + " (" + weak.m + "%) for later. Fix the room first, then come back.", id: (fresh || weak).t.id, btn: (fresh ? "Light start: " + fresh.t.name : "Retake " + weak.t.name) };
+  if (poor && weak) return { lvl: "bad", t: "Conditions are poor right now", x: "Focus is " + f + " (CO2 " + Math.round(sim.co2) + " ppm, noise " + Math.round(sim.db) + " dB). Save " + weak.t.name + " (" + weak.m + "%) for later. Do a light review of " + strong.t.name + " now, or fix the room first.", id: strong.t.id, btn: "Light review: " + strong.t.name };
+  if (poor) return { lvl: "warn", t: "Conditions are poor right now", x: "Focus is " + f + ". Open a window or reduce noise, then come back for a harder topic.", id: (fresh || strong).t.id, btn: "Quick review: " + (fresh || strong).t.name };
+  if (weak) return { lvl: "", t: "Review " + weak.t.name, x: (sim.on ? "Conditions look good (focus " + f + "). " : "") + "This is your weakest topic at " + weak.m + "%. Best time to tackle it." + note, id: weak.t.id, btn: "Start " + weak.t.name };
+  if (fresh) return { lvl: "", t: "Try " + fresh.t.name, x: "Every topic you tried is above 70%. Explore a new one." + note, id: fresh.t.id, btn: "Start " + fresh.t.name };
+  return { lvl: "", t: "Keep it up", x: "All topics are above 70%. Retake your lowest to stay sharp." + note, id: tried[0].t.id, btn: "Start " + tried[0].t.name };
+}
+function renderCoach() {
+  var box = $("coach");
+  if (!box.firstChild) {
+    box.innerHTML = '<div class="k">Study coach</div><div class="t"></div><p class="x"></p><button class="pri"></button>';
+    box.querySelector("button").onclick = function () { if (coachTopic) startQuiz(coachTopic); };
+  }
+  var p = coachPlan(); coachTopic = p.id;
+  box.className = "coach " + p.lvl;
+  box.querySelector(".t").textContent = p.t; box.querySelector(".x").textContent = p.x; box.querySelector("button").textContent = p.btn;
+}
+
+/* ---------- Data analysis + chart ---------- */
+var BANDS = [
+  { name: "Good (75+)", test: function (f) { return f >= 75; }, color: "var(--teal)" },
+  { name: "Fair (50-74)", test: function (f) { return f >= 50 && f < 75; }, color: "var(--warn)" },
+  { name: "Poor (<50)", test: function (f) { return f < 50; }, color: "var(--bad)" }
+];
+function pctOf(a) { return a.score / a.total * 100; }
+function mean(list) { var s = 0; list.forEach(function (v) { s += v; }); return list.length ? s / list.length : null; }
+
+function renderInsights() {
+  var mine = loadDB().attempts.filter(function (a) { return a.userId === user.id; });
+  var sims = mine.filter(function (a) { return a.sim; }).length;
+  $("simBadge").innerHTML = sims ? '<span class="badge">Includes ' + sims + ' simulated attempts</span>' : "";
+  var tried = topicStats().filter(function (x) { return x.m !== null; }).sort(function (a, b) { return a.m - b.m; });
+  var withEnv = mine.filter(function (a) { return a.env; });
+  var avgScore = mean(mine.map(pctOf)), avgFocus = mean(withEnv.map(function (a) { return a.env.focus; }));
+  var low = tried[0], high = tried[tried.length - 1];
+  var tiles = [
+    ["Attempts", mine.length, "total saved"],
+    ["Average score", avgScore === null ? "-" : Math.round(avgScore) + "%", "all topics"],
+    ["Completion", tried.length + " / " + TOPICS.length, Math.round(tried.length / TOPICS.length * 100) + "% of topics tried"],
+    ["Weakest topic", low ? low.t.name : "-", low ? low.m + "% average" : ""],
+    ["Best topic", high ? high.t.name : "-", high ? high.m + "% average" : ""],
+    ["Average focus", avgFocus === null ? "-" : Math.round(avgFocus), "when quizzes were taken"]
+  ];
+  $("tiles").innerHTML = tiles.map(function (t) { return '<div class="tile"><small>' + t[0] + '</small><b>' + t[1] + '</b><small>' + t[2] + '</small></div>'; }).join("");
+
+  var groups = BANDS.map(function (b) {
+    var g = withEnv.filter(function (a) { return b.test(a.env.focus); });
+    return { b: b, n: g.length, avg: mean(g.map(pctOf)) };
+  });
+  var svg = "<title>Average quiz score by focus conditions</title>";
+  [0, 50, 100].forEach(function (v) {
+    var y = 150 - v / 100 * 130;
+    svg += '<line x1="40" x2="312" y1="' + y + '" y2="' + y + '" style="stroke:var(--line)"/><text x="34" y="' + (y + 3) + '" text-anchor="end">' + v + '</text>';
+  });
+  groups.forEach(function (g, i) {
+    var x0 = 55 + i * 90, cx = x0 + 30;
+    if (g.avg !== null) {
+      var h = g.avg / 100 * 130;
+      svg += '<rect class="bar" x="' + x0 + '" y="' + (150 - h) + '" width="60" height="' + h + '" rx="6" style="fill:' + g.b.color + '"/><text x="' + cx + '" y="' + (146 - h) + '" text-anchor="middle" style="fill:var(--ink);font-weight:700">' + Math.round(g.avg) + '%</text>';
+    } else svg += '<text x="' + cx + '" y="142" text-anchor="middle">no data</text>';
+    svg += '<text x="' + cx + '" y="164" text-anchor="middle">' + g.b.name + '</text><text x="' + cx + '" y="175" text-anchor="middle">n = ' + g.n + '</text>';
+  });
+  svg += '<text x="176" y="188" text-anchor="middle">Focus conditions when the quiz was taken</text><text transform="rotate(-90 10 85)" x="10" y="85" text-anchor="middle">Average score (%)</text>';
+  $("chart").innerHTML = svg;
+
+  var hi = withEnv.filter(function (a) { return a.env.focus >= 70; }), lo = withEnv.filter(function (a) { return a.env.focus < 70; });
+  var gap = (hi.length && lo.length) ? mean(hi.map(pctOf)) - mean(lo.map(pctOf)) : null;
+  var f1 = gap === null ? "Not enough data yet. Take quizzes in good and poor conditions, or add simulated data, to compare."
+    : "Scores average " + Math.round(mean(hi.map(pctOf))) + "% when focus is 70+ and " + Math.round(mean(lo.map(pctOf))) + "% below 70 (n = " + hi.length + " and " + lo.length + "). " + (gap >= 0 ? "Good conditions scored " + Math.round(gap) + " points higher." : "Poor conditions scored " + Math.round(-gap) + " points higher, which is usually noise from too few attempts.");
+  var f2 = withEnv.length ? Math.round(lo.length / withEnv.length * 100) + "% of attempts (" + lo.length + " of " + withEnv.length + ") were taken in poor conditions (focus under 70)." : "No attempts with sensor data yet.";
+  var dec = (gap === null || Math.min(hi.length, lo.length) < 5) ? "Collect more attempts before deciding. Each group needs at least 5." : gap >= 10 ? "Study hard topics only when focus is 70+. The study coach already postpones your weakest topic when conditions are poor." : "The gap is small so far. Keep tracking before changing your routine.";
+  $("findings").innerHTML = '<p class="find"><b>Finding 1.</b> ' + f1 + '</p><p class="find"><b>Finding 2.</b> ' + f2 + '</p><p class="find"><b>Decision.</b> ' + dec + '</p>';
+}
+
+// Simulated attempts: the chance of a correct answer rises with focus. Always labeled sim: true.
+function addSimData() {
+  var db = loadDB(), now = Date.now();
+  for (var i = 0; i < 40; i++) {
+    var t = TOPICS[Math.floor(Math.random() * TOPICS.length)], focus = 30 + Math.floor(Math.random() * 66), p = 0.3 + focus / 100 * 0.65, score = 0;
+    for (var q = 0; q < t.q.length; q++) if (Math.random() < p) score++;
+    db.attempts.push({ id: db.nextId++, userId: user.id, topicId: t.id, score: score, total: t.q.length, time: now - (40 - i) * 8 * 3600000,
+      env: { co2: Math.round(400 + (100 - focus) * 14 + Math.random() * 60), lux: Math.round(380 + Math.random() * 120), db: Math.round(30 + (100 - focus) * 0.35), focus: focus }, sim: true });
+  }
+  saveDB(db); renderInsights(); renderTopics();
+  $("insMsg").textContent = "Added 40 simulated attempts. They are labeled as simulated.";
+}
+function removeSimData() {
+  var db = loadDB(), ids = db.attempts.filter(function (a) { return a.sim && a.userId === user.id; }).map(function (a) { return a.id; });
+  db.attempts = db.attempts.filter(function (a) { return ids.indexOf(a.id) < 0; });
+  db.answers = db.answers.filter(function (a) { return ids.indexOf(a.attemptId) < 0; });
+  saveDB(db); renderInsights(); renderTopics();
+  $("insMsg").textContent = "Simulated data removed.";
+}
+$("addSim").onclick = addSimData; $("rmSim").onclick = removeSimData;
+
+/* ---------- Start: restore the session after reload ---------- */
+try {
+  var sid = parseInt(localStorage.getItem(SESSION_KEY), 10);
+  var saved = loadDB().users.filter(function (u) { return u.id === sid; })[0];
+  if (saved) startSession(saved);
+} catch (e) {}
+})();
+</script>
+</body>
+</html>
